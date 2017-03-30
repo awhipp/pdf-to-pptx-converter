@@ -1,0 +1,8 @@
+input/*
+output/*
+temp/*
+pdf-to-ppt-converter/target/*
+pdf-to-ppt-converter/pptxmerge.iml
+pdf-to-ppt-converter/.project
+pdf-to-ppt-converter/.classpath
+pdf-to-ppt-converter/.settings/*
