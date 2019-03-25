@@ -8,6 +8,9 @@ import javax.imageio.ImageIO;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageTree;
+import org.apache.pdfbox.rendering.ImageType;
+import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.poi.sl.usermodel.PictureData.PictureType;
 import org.apache.poi.util.IOUtils;
 import org.apache.poi.xslf.usermodel.XMLSlideShow;
@@ -40,18 +43,19 @@ public class Main {
 					        
 					        if (sourceFile.exists()) {
 					            System.out.println("Images copied to Folder: "+ destinationFile.getName());             
-					            PDDocument document = PDDocument.load(sourceDir);
-					            List<PDPage> list = document.getDocumentCatalog().getAllPages();
-					            System.out.println("Total files to be converted -> "+ list.size());
+					            PDDocument document = PDDocument.load(file);
+					            PDPageTree list = document.getPages();
+					            System.out.println("Total files to be converted -> "+ list.getCount());
 
 					            String fileName = sourceFile.getName().replace(".pdf", "");             
-					            int pageNumber = 1;
-					            for (PDPage page : list) {
-					                BufferedImage image = page.convertToImage();
-					                File outputfile = new File(destinationDir + fileName +"_"+ pageNumber +".png");
+						        PDFRenderer pdfRenderer = new PDFRenderer(document);
+					            for (int i = 0 ; i < list.getCount(); i++) {
+					            	PDPage page = list.get(i);
+
+						            BufferedImage image = pdfRenderer.renderImageWithDPI(i, 300, ImageType.RGB);
+					                File outputfile = new File(destinationDir + fileName +"_"+ (i+1) +".png");
 					                ImageIO.write(image, "png", outputfile);
-					                pageNumber++;
-					                
+
 					                ppt.setPageSize(new java.awt.Dimension(1280, 720));
 					                XSLFSlide slide = ppt.createSlide();
 							        byte[] pictureData = IOUtils.toByteArray(new FileInputStream(outputfile.getAbsolutePath()));
